@@ -24,6 +24,7 @@ function App() {
   const [showQuestion, setShowQuestion] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [showNoButton, setShowNoButton] = useState(true);
+  const [showFullLetter, setShowFullLetter] = useState(false);
 
   const handleLetterComplete = () => {
     setLetterComplete(true);
@@ -142,7 +143,7 @@ function App() {
               exit={{ opacity: 0 }}
             >
               {/* Letter content */}
-              <LetterCard onComplete={handleLetterComplete} />
+              <LetterCard onComplete={handleLetterComplete} hideContent={showQuestion} />
 
               {/* Valentine Question */}
               <AnimatePresence>
@@ -224,7 +225,72 @@ function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <Celebration />
+              {!showFullLetter ? (
+                <>
+                  <Celebration />
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="mt-8 text-center"
+                  >
+                    <motion.button
+                      onClick={() => setShowFullLetter(true)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-8 py-3 rounded-full font-semibold text-white shadow-lg transition-all duration-300"
+                      style={{ backgroundColor: "#ffb3c6" }}
+                      onMouseEnter={(e) =>
+                        (e.target.style.backgroundColor = "#ff9db8")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.target.style.backgroundColor = "#ffb3c6")
+                      }
+                    >
+                      View Full Letter
+                    </motion.button>
+                  </motion.div>
+                </>
+              ) : (
+                <div className="space-y-6">
+                  <motion.h1
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-3xl md:text-4xl font-bold text-center mb-6"
+                    style={{ color: "#ffb3c6" }}
+                  >
+                    To حبيبتي
+                  </motion.h1>
+                  <div className="text-lg md:text-xl text-gray-700 leading-relaxed max-h-[400px] overflow-y-auto">
+                    <p className="mb-3">Hi baby girl, I hope you like the surprise I'm sorry I couldn't get something to you earlier,</p>
+                    <p className="mb-3">I just wanted to create something special for you this year.</p>
+                    <p className="mb-3">I love you so so so much and I wanted us to spend this year's Valentine's as official fiancés!!</p>
+                    <p className="mb-3">I'm so happy and grateful for you and all that you do for me whether it's making my life easier, planning or just you being there looking so delicious.</p>
+                    <p className="mb-3">Can't believe a class can be so life changing, I will be forever happy that I took STAT 214 and met my-very-soon to be wife there!</p>
+                    <p className="mb-3">I can't wait for our engagement part coming up so soon, I think everything has been working out very very nicely alhamdulillah!</p>
+                    <p className="mb-3">You make my life 1000000x better habibiti I just want you to know that,</p>
+                    <p className="mb-3">I wake up everyday looking forward to us sitting down together, and it doesn't have to be anything special it can be something as simple as just walking together.</p>
+                    <p className="mb-3">For that and many other reasons, there is no one else in this universe that I would like to spend Valentine's Day with so….</p>
+                  </div>
+                  <div className="flex justify-center">
+                    <motion.button
+                      onClick={() => setShowFullLetter(false)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-8 py-3 rounded-full font-semibold text-white shadow-lg transition-all duration-300"
+                      style={{ backgroundColor: "#ffb3c6" }}
+                      onMouseEnter={(e) =>
+                        (e.target.style.backgroundColor = "#ff9db8")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.target.style.backgroundColor = "#ffb3c6")
+                      }
+                    >
+                      Back to Celebration
+                    </motion.button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

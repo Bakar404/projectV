@@ -29,7 +29,7 @@ const LETTER_LINES = [
   "For that and many other reasons, there is no one else in this universe that I would like to spend Valentine's Day with so….",
 ];
 
-const LetterCard = ({ onComplete }) => {
+const LetterCard = ({ onComplete, hideContent = false }) => {
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [displayedLines, setDisplayedLines] = useState([]);
   const [currentText, setCurrentText] = useState("");
@@ -76,16 +76,19 @@ const LetterCard = ({ onComplete }) => {
   return (
     <div className="space-y-4">
       {/* Title */}
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-3xl md:text-4xl font-bold text-center mb-6"
-        style={{ color: "#ffb3c6" }}
-      >
-        To حبيبتي
-      </motion.h1>
+      {!hideContent && (
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-3xl md:text-4xl font-bold text-center mb-6"
+          style={{ color: "#ffb3c6" }}
+        >
+          To حبيبتي
+        </motion.h1>
+      )}
 
       {/* Letter content area */}
+      {!hideContent && (
       <div className="min-h-[300px] md:min-h-[350px] text-lg md:text-xl text-gray-700 leading-relaxed">
         {/* Already typed lines */}
         {displayedLines.map((line, index) => (
@@ -113,9 +116,10 @@ const LetterCard = ({ onComplete }) => {
           </motion.p>
         )}
       </div>
+      )}
 
       {/* Continue button */}
-      {!isComplete && (
+      {!isComplete && !hideContent && (
         <div className="flex justify-center">
           <motion.button
             onClick={handleContinue}

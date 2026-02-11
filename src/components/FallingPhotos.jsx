@@ -55,6 +55,19 @@ const IMAGE_FILENAMES = [
 const FallingPhotos = () => {
   const [imageUrls, setImageUrls] = useState([]);
   const [fallingPhotos, setFallingPhotos] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Detect if mobile device
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     // Convert filenames to full paths
@@ -70,19 +83,22 @@ const FallingPhotos = () => {
       // Create initial falling photos
       createFallingPhotos();
 
-      // Add new falling photo every 3 seconds
+      // Add new falling photo - more frequently on desktop, less on mobile
       const interval = setInterval(() => {
         addFallingPhoto();
-      }, 3000);
+      }, isMobile ? 4000 : 3000); // 4s on mobile, 3s on desktop
 
       return () => clearInterval(interval);
     }
-  }, [imageUrls]);
+  }, [imageUrls, isMobile]);
 
   function createFallingPhotos() {
     const photos = [];
-    // Create initial set of photos (5-8 photos)
-    const initialCount = Math.floor(Math.random() * 4) + 5;
+    // Fewer photos on mobile (2-4), more on desktop (5-8)
+    const initialCount = isMobile 
+      ? Math.floor(Math.random() * 3) + 2
+      : Math.floor(Math.random() * 4) + 5;
+    
     for (let i = 0; i < initialCount; i++) {
       photos.push(generatePhotoData());
     }
@@ -92,15 +108,24 @@ const FallingPhotos = () => {
 
   function addFallingPhoto() {
     setFallingPhotos((prev) => {
-      // Keep only last 10 photos to prevent memory issues
+      // Keep fewer photos on mobile to improve performance
+      const maxPhotos = isMobile ? 6 : 10;
       const updated = [...prev, generatePhotoData()];
       console.log("Added new falling photo, total:", updated.length);
-      return updated.slice(-10);
+      return updated.slice(-maxPhotos);
     });
   }
 
   function generatePhotoData() {
     const randomImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+    
+    // Smaller sizes on mobile for better performance and visibility
+    const sizeRange = isMobile 
+      ? { min: 80, max: 150 }  // Mobile: 80-150px
+      : { min: 150, max: 300 }; // Desktop: 150-300px
+    
+    const size = Math.random() * (sizeRange.max - sizeRange.min) + sizeRange.min;
+    
     return {
       id: Math.random(),
       imageUrl: randomImage,
@@ -108,7 +133,7 @@ const FallingPhotos = () => {
       duration: Math.random() * 5 + 8, // Fall duration (8-13 seconds)
       delay: Math.random() * 2, // Random delay (0-2 seconds)
       rotation: Math.random() * 40 - 20, // Random rotation (-20 to 20 degrees)
-      size: Math.random() * 150 + 150, // Random size (150-300px)
+      size: size,
     };
   }
 

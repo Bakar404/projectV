@@ -59,7 +59,7 @@ const FallingPhotos = () => {
   useEffect(() => {
     // Convert filenames to full paths
     const paths = IMAGE_FILENAMES.map(
-      (filename) => `/assets/photos/${encodeURIComponent(filename)}`,
+      (filename) => `${import.meta.env.BASE_URL}assets/photos/${encodeURIComponent(filename)}`,
     );
     setImageUrls(paths);
     console.log("Loaded image paths:", paths);

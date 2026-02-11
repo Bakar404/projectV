@@ -12,7 +12,7 @@ import { Music, Volume1, Volume2 } from "lucide-react";
  */
 
 // ✏️ EDIT THIS: Update with your song file path
-const SONG_URL = "/assets/our-song.mp3";
+const SONG_URL = `${import.meta.env.BASE_URL}assets/our-song.mp3`;
 
 const AudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);

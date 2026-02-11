@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sprite Sheet Frame Extractor</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #e91e63;
+        text-align: center;
+      }
+      .upload-area {
+        border: 3px dashed #e91e63;
+        padding: 40px;
+        text-align: center;
+        margin: 20px 0;
+        border-radius: 10px;
+        background: #fce4ec;
+      }
+      input[type="file"] {
+        margin: 20px 0;
+      }
+      .settings {
+        margin: 20px 0;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+      }
+      .settings label {
+        display: inline-block;
+        width: 150px;
+        font-weight: bold;
+      }
+      .settings input {
+        padding: 8px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100px;
+      }
+      button {
+        background: #e91e63;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 10px 5px;
+      }
+      button:hover {
+        background: #c2185b;
+      }
+      #preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+      }
+      .frame {
+        border: 2px solid #e91e63;
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        text-align: center;
+      }
+      .frame img {
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+        border: 1px solid #ddd;
+      }
+      .frame button {
+        margin-top: 10px;
+        padding: 8px 15px;
+        font-size: 12px;
+      }
+      canvas {
+        display: none;
+      }
+      .instructions {
+        background: #fff3cd;
+        padding: 15px;
+        border-left: 4px solid #ffc107;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎨 Pixel Character Frame Extractor</h1>
+
+      <div class="instructions">
+        <strong>📝 Instructions:</strong><br />
+        1. Upload your sprite sheet image<br />
+        2. Set the frame dimensions (width and height of each character)<br />
+        3. Set columns and rows<br />
+        4. Click "Extract Frames"<br />
+        5. Download each frame individually
+      </div>
+
+      <div class="upload-area">
+        <h3>Upload Your Sprite Sheet</h3>
+        <input type="file" id="imageInput" accept="image/*" />
+      </div>
+
+      <div class="settings">
+        <div>
+          <label>Frame Width:</label>
+          <input type="number" id="frameWidth" value="32" min="1" />
+          <small>(pixels)</small>
+        </div>
+        <div>
+          <label>Frame Height:</label>
+          <input type="number" id="frameHeight" value="32" min="1" />
+          <small>(pixels)</small>
+        </div>
+        <div>
+          <label>Columns:</label>
+          <input type="number" id="columns" value="4" min="1" />
+        </div>
+        <div>
+          <label>Rows:</label>
+          <input type="number" id="rows" value="1" min="1" />
+        </div>
+      </div>
+
+      <div style="text-align: center">
+        <button onclick="extractFrames()">Extract Frames</button>
+        <button onclick="downloadAll()">Download All Frames</button>
+      </div>
+
+      <div id="preview"></div>
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+      let extractedFrames = [];
+
+      function extractFrames() {
+        const input = document.getElementById("imageInput");
+        const file = input.files[0];
+
+        if (!file) {
+          alert("Please select an image first!");
+          return;
+        }
+
+        const frameWidth = parseInt(
+          document.getElementById("frameWidth").value,
+        );
+        const frameHeight = parseInt(
+          document.getElementById("frameHeight").value,
+        );
+        const columns = parseInt(document.getElementById("columns").value);
+        const rows = parseInt(document.getElementById("rows").value);
+
+        const img = new Image();
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          img.src = e.target.result;
+        };
+
+        img.onload = function () {
+          const canvas = document.getElementById("canvas");
+          const ctx = canvas.getContext("2d");
+          const preview = document.getElementById("preview");
+          preview.innerHTML = "";
+          extractedFrames = [];
+
+          let frameIndex = 0;
+
+          for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < columns; col++) {
+              canvas.width = frameWidth;
+              canvas.height = frameHeight;
+
+              ctx.clearRect(0, 0, frameWidth, frameHeight);
+              ctx.drawImage(
+                img,
+                col * frameWidth,
+                row * frameHeight,
+                frameWidth,
+                frameHeight,
+                0,
+                0,
+                frameWidth,
+                frameHeight,
+              );
+
+              const frameDataUrl = canvas.toDataURL("image/png");
+              extractedFrames.push(frameDataUrl);
+
+              const frameDiv = document.createElement("div");
+              frameDiv.className = "frame";
+              frameDiv.innerHTML = `
+              <img src="${frameDataUrl}" width="${frameWidth * 4}" height="${frameHeight * 4}">
+              <br>
+              <small>Frame ${frameIndex + 1}</small>
+              <br>
+              <button onclick="downloadFrame(${frameIndex})">Download</button>
+            `;
+              preview.appendChild(frameDiv);
+
+              frameIndex++;
+            }
+          }
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      function downloadFrame(index) {
+        const link = document.createElement("a");
+        link.download = `character-frame-${index + 1}.png`;
+        link.href = extractedFrames[index];
+        link.click();
+      }
+
+      function downloadAll() {
+        if (extractedFrames.length === 0) {
+          alert("Please extract frames first!");
+          return;
+        }
+
+        extractedFrames.forEach((frameData, index) => {
+          setTimeout(() => {
+            const link = document.createElement("a");
+            link.download = `character-frame-${index + 1}.png`;
+            link.href = frameData;
+            link.click();
+          }, index * 200);
+        });
+      }
+    </script>
+  </body>
+</html>

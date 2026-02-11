@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Character Setup</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fef1f7;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #e91e63;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+      }
+      .step {
+        background: #f9f9f9;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 10px;
+        border-left: 5px solid #e91e63;
+      }
+      .step h3 {
+        margin-top: 0;
+        color: #e91e63;
+      }
+      .upload-box {
+        border: 3px dashed #e91e63;
+        padding: 30px;
+        text-align: center;
+        margin: 15px 0;
+        border-radius: 10px;
+        background: #fef1f7;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .upload-box:hover {
+        background: #fce4ec;
+        border-color: #c2185b;
+      }
+      .upload-box.active {
+        background: #e1f5e1;
+        border-color: #4caf50;
+      }
+      input[type="file"] {
+        display: none;
+      }
+      button {
+        background: #e91e63;
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 10px 5px;
+        font-weight: bold;
+      }
+      button:hover:not(:disabled) {
+        background: #c2185b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+      .preview-item {
+        text-align: center;
+        padding: 10px;
+        background: white;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+      }
+      .preview-item.ready {
+        border-color: #4caf50;
+        background: #f1f8f4;
+      }
+      .preview-item img {
+        width: 80px;
+        height: 80px;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+      }
+      .preview-item .label {
+        font-size: 11px;
+        margin-top: 8px;
+        color: #666;
+        font-weight: bold;
+      }
+      .preview-item .status {
+        font-size: 10px;
+        margin-top: 4px;
+        color: #888;
+      }
+      .preview-item.ready .status {
+        color: #4caf50;
+      }
+      .actions {
+        text-align: center;
+        margin: 30px 0;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid #c3e6cb;
+      }
+      .warning {
+        background: #fff3cd;
+        color: #856404;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid #ffeaa7;
+      }
+      canvas {
+        display: none;
+      }
+      .instruction-list {
+        background: #e3f2fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+      .instruction-list li {
+        margin: 10px 0;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎨 Auto Character Setup</h1>
+      <p class="subtitle">
+        Upload your sprite sheets and download extracted frames
+      </p>
+
+      <div class="warning">
+        <strong>⚡ Quick Instructions:</strong><br />
+        1. Upload your 4 sprite sheet images below<br />
+        2. Click "Extract All Frames"<br />
+        3. Download the ZIP file<br />
+        4. Extract and copy all PNG files to: <code>public/assets/</code>
+      </div>
+
+      <!-- Standing Poses Upload -->
+      <div class="step">
+        <h3>Step 1: Upload Standing/Idle Sprite Sheet</h3>
+        <p>
+          Upload the image with multiple standing poses (5 characters in a row)
+        </p>
+        <div
+          class="upload-box"
+          onclick="document.getElementById('standingInput').click()"
+        >
+          <span id="standingLabel"
+            >📤 Click to upload standing sprite sheet</span
+          >
+          <input
+            type="file"
+            id="standingInput"
+            accept="image/*"
+            onchange="handleStandingUpload(event)"
+          />
+        </div>
+        <div id="standingPreview" class="preview-grid"></div>
+      </div>
+
+      <!-- Walking Poses Upload -->
+      <div class="step">
+        <h3>Step 2: Upload Walking Sprite Sheets</h3>
+        <p>
+          Upload the images with walking animations (4 characters in a row each)
+        </p>
+        <div
+          class="upload-box"
+          onclick="document.getElementById('walkingInput1').click()"
+        >
+          <span id="walkingLabel1"
+            >📤 Click to upload first walking sprite sheet</span
+          >
+          <input
+            type="file"
+            id="walkingInput1"
+            accept="image/*"
+            onchange="handleWalkingUpload(event, 1)"
+          />
+        </div>
+        <div
+          class="upload-box"
+          onclick="document.getElementById('walkingInput2').click()"
+        >
+          <span id="walkingLabel2"
+            >📤 Click to upload second walking sprite sheet</span
+          >
+          <input
+            type="file"
+            id="walkingInput2"
+            accept="image/*"
+            onchange="handleWalkingUpload(event, 2)"
+          />
+        </div>
+        <div id="walkingPreview" class="preview-grid"></div>
+      </div>
+
+      <!-- Extract and Download -->
+      <div class="actions">
+        <button id="extractBtn" onclick="extractAll()" disabled>
+          Extract All Frames
+        </button>
+        <button id="downloadBtn" onclick="downloadZip()" disabled>
+          📥 Download ZIP
+        </button>
+      </div>
+
+      <div id="successMessage" style="display: none" class="success">
+        ✅ <strong>All frames extracted!</strong> Click "Download ZIP" above,
+        then extract the PNG files to your <code>public/assets/</code> folder.
+      </div>
+
+      <div class="instruction-list">
+        <strong>📁 After downloading:</strong>
+        <ol>
+          <li>Extract the ZIP file you downloaded</li>
+          <li>Copy all PNG files to: <code>ProjectV/public/assets/</code></li>
+          <li>Refresh your app at http://localhost:5173</li>
+          <li>Your character should appear! 🎉</li>
+        </ol>
+      </div>
+
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+      let extractedFrames = {
+        stand: [],
+        walk: [],
+      };
+      let uploadedImages = {
+        standing: null,
+        walking1: null,
+        walking2: null,
+      };
+
+      function handleStandingUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          uploadedImages.standing = e.target.result;
+          document.getElementById("standingLabel").textContent =
+            "✅ " + file.name;
+          document
+            .querySelector("#standingInput")
+            .parentElement.classList.add("active");
+          checkReadyToExtract();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function handleWalkingUpload(event, index) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          uploadedImages[`walking${index}`] = e.target.result;
+          document.getElementById(`walkingLabel${index}`).textContent =
+            "✅ " + file.name;
+          document
+            .querySelector(`#walkingInput${index}`)
+            .parentElement.classList.add("active");
+          checkReadyToExtract();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function checkReadyToExtract() {
+        const ready =
+          uploadedImages.standing &&
+          (uploadedImages.walking1 || uploadedImages.walking2);
+        document.getElementById("extractBtn").disabled = !ready;
+      }
+
+      function extractFramesFromSprite(imageSrc, frameCount, offsetX = 0) {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = function () {
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            const frames = [];
+
+            const frameWidth = Math.floor(img.width / frameCount);
+            const frameHeight = img.height;
+
+            for (let i = 0; i < frameCount; i++) {
+              canvas.width = frameWidth;
+              canvas.height = frameHeight;
+              ctx.clearRect(0, 0, frameWidth, frameHeight);
+
+              ctx.drawImage(
+                img,
+                (i + offsetX) * frameWidth,
+                0,
+                frameWidth,
+                frameHeight,
+                0,
+                0,
+                frameWidth,
+                frameHeight,
+              );
+
+              frames.push(canvas.toDataURL("image/png"));
+            }
+
+            resolve(frames);
+          };
+          img.src = imageSrc;
+        });
+      }
+
+      async function extractAll() {
+        document.getElementById("extractBtn").disabled = true;
+        document.getElementById("extractBtn").textContent = "Extracting...";
+
+        extractedFrames.stand = [];
+        extractedFrames.walk = [];
+
+        // Extract standing frames (take first 4 from the 5-character sprite)
+        if (uploadedImages.standing) {
+          const standFrames = await extractFramesFromSprite(
+            uploadedImages.standing,
+            4,
+            0,
+          );
+          extractedFrames.stand = standFrames;
+        }
+
+        // Extract walking frames
+        if (uploadedImages.walking1) {
+          const walk1 = await extractFramesFromSprite(
+            uploadedImages.walking1,
+            4,
+          );
+          extractedFrames.walk.push(...walk1);
+        }
+        if (uploadedImages.walking2 && extractedFrames.walk.length < 4) {
+          const walk2 = await extractFramesFromSprite(
+            uploadedImages.walking2,
+            4,
+          );
+          extractedFrames.walk.push(...walk2);
+        }
+
+        // Ensure we have exactly 4 walk frames
+        extractedFrames.walk = extractedFrames.walk.slice(0, 4);
+
+        // Show previews
+        showPreviews();
+
+        document.getElementById("extractBtn").textContent = "✅ Extracted!";
+        document.getElementById("downloadBtn").disabled = false;
+        document.getElementById("successMessage").style.display = "block";
+      }
+
+      function showPreviews() {
+        const standPreview = document.getElementById("standingPreview");
+        const walkPreview = document.getElementById("walkingPreview");
+
+        standPreview.innerHTML = "";
+        extractedFrames.stand.forEach((frame, i) => {
+          standPreview.innerHTML += `
+          <div class="preview-item ready">
+            <img src="${frame}">
+            <div class="label">character-stand${i + 1}.png</div>
+            <div class="status">✓ Ready</div>
+          </div>
+        `;
+        });
+
+        walkPreview.innerHTML = "";
+        extractedFrames.walk.forEach((frame, i) => {
+          walkPreview.innerHTML += `
+          <div class="preview-item ready">
+            <img src="${frame}">
+            <div class="label">character-walk${i + 1}.png</div>
+            <div class="status">✓ Ready</div>
+          </div>
+        `;
+        });
+      }
+
+      async function downloadZip() {
+        const zip = new JSZip();
+        const assetsFolder = zip.folder("assets");
+
+        // Add standing frames
+        extractedFrames.stand.forEach((frame, i) => {
+          const base64Data = frame.split(",")[1];
+          assetsFolder.file(`character-stand${i + 1}.png`, base64Data, {
+            base64: true,
+          });
+        });
+
+        // Add walking frames
+        extractedFrames.walk.forEach((frame, i) => {
+          const base64Data = frame.split(",")[1];
+          assetsFolder.file(`character-walk${i + 1}.png`, base64Data, {
+            base64: true,
+          });
+        });
+
+        // Generate and download
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(content);
+          link.download = "character-frames.zip";
+          link.click();
+        });
+      }
+    </script>
+  </body>
+</html>

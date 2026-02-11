@@ -47,7 +47,7 @@ function App() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4 overflow-hidden"
+      className="min-h-screen flex items-center justify-center px-2 py-8 md:p-4 overflow-hidden"
       style={{ backgroundColor: "#ffd6e0" }}
     >
       {/* Falling Photos Background - Only show during letter page */}
@@ -78,7 +78,7 @@ function App() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8 md:p-12 z-10"
+        className="relative w-full max-w-md md:max-w-2xl bg-white rounded-3xl shadow-2xl p-6 md:p-12 z-10"
       >
         <AnimatePresence mode="wait">
           {showLanding ? (

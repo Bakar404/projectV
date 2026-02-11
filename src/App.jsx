@@ -78,7 +78,7 @@ function App() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md md:max-w-2xl bg-white rounded-3xl shadow-2xl p-6 md:p-12 z-10"
+        className="relative w-full max-w-md md:max-w-2xl bg-white/100 md:bg-white/75 rounded-3xl shadow-2xl p-6 md:p-12 z-10"
       >
         <AnimatePresence mode="wait">
           {showLanding ? (

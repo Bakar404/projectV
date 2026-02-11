@@ -62,17 +62,18 @@ const FallingPhotos = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener("resize", checkMobile);
-    
+
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
     // Convert filenames to full paths
     const paths = IMAGE_FILENAMES.map(
-      (filename) => `${import.meta.env.BASE_URL}assets/photos/${encodeURIComponent(filename)}`,
+      (filename) =>
+        `${import.meta.env.BASE_URL}assets/photos/${encodeURIComponent(filename)}`,
     );
     setImageUrls(paths);
     console.log("Loaded image paths:", paths);
@@ -84,9 +85,12 @@ const FallingPhotos = () => {
       createFallingPhotos();
 
       // Add new falling photo - more frequently on desktop, less on mobile
-      const interval = setInterval(() => {
-        addFallingPhoto();
-      }, isMobile ? 4000 : 3000); // 4s on mobile, 3s on desktop
+      const interval = setInterval(
+        () => {
+          addFallingPhoto();
+        },
+        isMobile ? 4000 : 3000,
+      ); // 4s on mobile, 3s on desktop
 
       return () => clearInterval(interval);
     }
@@ -95,10 +99,10 @@ const FallingPhotos = () => {
   function createFallingPhotos() {
     const photos = [];
     // Fewer photos on mobile (2-4), more on desktop (5-8)
-    const initialCount = isMobile 
+    const initialCount = isMobile
       ? Math.floor(Math.random() * 3) + 2
       : Math.floor(Math.random() * 4) + 5;
-    
+
     for (let i = 0; i < initialCount; i++) {
       photos.push(generatePhotoData());
     }
@@ -118,19 +122,25 @@ const FallingPhotos = () => {
 
   function generatePhotoData() {
     const randomImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
-    
+
     // Smaller sizes on mobile for better performance and visibility
-    const sizeRange = isMobile 
-      ? { min: 80, max: 150 }  // Mobile: 80-150px
+    const sizeRange = isMobile
+      ? { min: 80, max: 150 } // Mobile: 80-150px
       : { min: 150, max: 300 }; // Desktop: 150-300px
-    
-    const size = Math.random() * (sizeRange.max - sizeRange.min) + sizeRange.min;
-    
+
+    const size =
+      Math.random() * (sizeRange.max - sizeRange.min) + sizeRange.min;
+
+    // Slower fall on mobile for better readability (15-23s vs 8-13s)
+    const duration = isMobile
+      ? Math.random() * 8 + 15 // Mobile: 15-23 seconds
+      : Math.random() * 5 + 8; // Desktop: 8-13 seconds
+
     return {
       id: Math.random(),
       imageUrl: randomImage,
       left: Math.random() * 100, // Random horizontal position (0-100%)
-      duration: Math.random() * 5 + 8, // Fall duration (8-13 seconds)
+      duration: duration,
       delay: Math.random() * 2, // Random delay (0-2 seconds)
       rotation: Math.random() * 40 - 20, // Random rotation (-20 to 20 degrees)
       size: size,
@@ -150,7 +160,7 @@ const FallingPhotos = () => {
           }}
           animate={{
             y: "110vh",
-            opacity: [0, 0.85, 0.85, 0.5],
+            opacity: isMobile ? [0, 0.5, 0.5, 0.3] : [0, 0.85, 0.85, 0.5],
             rotate: photo.rotation,
           }}
           transition={{

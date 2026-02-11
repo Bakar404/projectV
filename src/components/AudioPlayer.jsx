@@ -42,7 +42,7 @@ const AudioPlayer = () => {
         }
       }
     };
-    
+
     // Small delay to ensure audio is loaded
     const timer = setTimeout(autoPlay, 500);
     return () => clearTimeout(timer);

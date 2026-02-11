@@ -22,7 +22,7 @@ const LETTER_LINES = [
   "I just wanted to create something special for you this year.",
   "I love you so so so much and I wanted us to spend this year's Valentine's as official fiancés!!",
   "I'm so happy and grateful for you and all that you do for me whether it's making my life easier, planning or just you being there looking so delicious.",
-  "Can't believe a class can be so life changing, I will be forever happy that I took STAT 214 and met my-very-soon to be my wife there!",
+  "Can't believe a class can be so life changing, I will be forever happy that I took STAT 214 and met my-very-soon to be wife there!",
   "I can't wait for our engagement part coming up so soon, I think everything has been working out very very nicely alhamdulillah!",
   "You make my life 1000000x better habibiti I just want you to know that,",
   "I wake up everyday looking forward to us sitting down together, and it doesn't have to be anything special it can be something as simple as just walking together.",
